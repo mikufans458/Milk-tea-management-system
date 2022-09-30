@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+mapper标签：mapper文件的根标签，有且仅有一个
+namespace属性：该mapper文件所绑定的mapper接口的全限定名
+-->
+<mapper namespace="com.sys.yms.mapper.TypeMapper">
+
+    <select id="findAllType" resultType="Type">
+        SELECT* FROM type
+    </select>
+
+<!--带条件的分页查询-->
+    <select id="findTypesByPage" resultType="Type">
+        SELECT* FROM type
+        <if test="n != null and n != ''">
+            where typename like concat('%',#{n},'%')
+        </if>
+        limit #{s},#{l}
+    </select>
+
+<!--查询数据量-->
+    <select id="findCount" resultType="int">
+        SELECT count(id) FROM type
+        <if test="typeName != null and typeName != ''">
+            where typename like concat('%',#{typeName},'%')
+        </if>
+    </select>
+
+    <insert id="insertType">
+        INSERT into type(typename,timageurl,tstate)
+        VALUES(#{typeName},#{tImageUrl},0);
+    </insert>
+<!--根据id修改状态-->
+    <update id="updateStateById">
+        update type
+        set tstate=#{typeState}
+        WHERE id=#{id}
+    </update>
+<!--根据id修改整行数据-->
+    <update id="updateTypeById">
+        update type
+        set typename=#{typeName},timageurl=#{tImageUrl}
+        WHERE id=#{id}
+    </update>
+<!--根据id删除数据-->
+    <delete id="deleteTypeById">
+        DELETE FROM type
+        WHERE id=#{id}
+    </delete>
+</mapper>

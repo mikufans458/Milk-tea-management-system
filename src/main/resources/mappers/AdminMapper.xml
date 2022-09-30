@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+mapper标签：mapper文件的根标签，有且仅有一个
+namespace属性：该mapper文件所绑定的mapper接口的全限定名
+-->
+<mapper namespace="com.sys.yms.mapper.AdminMapper">
+
+   <select id="judge" resultType="admin">
+       SELECT* FROM admin WHERE a_account=#{account} and a_pwd=#{password}
+   </select>
+
+</mapper>
+

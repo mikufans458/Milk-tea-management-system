@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+mapper标签：mapper文件的根标签，有且仅有一个
+namespace属性：该mapper文件所绑定的mapper接口的全限定名
+-->
+<mapper namespace="com.sys.yms.mapper.ProductMapper">
+    <resultMap id="mapProductAndType" type="Product">
+<!--先映射普通属性-->
+        <id column="id" property="id"></id>
+        <result column="pname" property="pname"></result>
+        <result column="typeid" property="typeid"></result>
+        <result column="tprice" property="tprice"></result>
+        <result column="tintroduce" property="tintroduce"></result>
+        <result column="pimageurl" property="pimageurl"></result>
+        <result column="photstate" property="photstate"></result>
+        <result column="pdiscount" property="pdiscount"></result>
+        <result column="pstate" property="pstate"></result>
+
+        <!--再映射实体类属性-->
+        <association property="type" javaType="Type">
+            <result column="typename" property="typeName"></result>
+            <result column="timageurl" property="tImageUrl"></result>
+            <result column="tstate" property="tState"></result>
+        </association>
+    </resultMap>
+    <insert id="insertProduct">
+        INSERT product(pname,tprice,pdiscount,tintroduce,typeid,pimageurl)
+        VALUES(#{pname},#{tprice},#{pdiscount},#{tintroduce},#{typeid},#{pimageurl})
+    </insert>
+    <!--修改产品信息-->
+    <update id="updateProduct">
+        update product
+        set pname=#{pname},typeid=#{typeid},tprice=#{tprice},tintroduce=#{tintroduce},pdiscount=#{pdiscount},pimageurl=#{pimageurl}
+        WHERE id=#{id}
+    </update>
+<!--修改产品状态-->
+    <update id="updateProductStateById">
+            update product
+            set pstate=#{productState}
+            WHERE id=#{id}
+    </update>
+<!--修改产品热饮状态-->
+    <update id="updateProductHotStateById">
+        update product
+        set photstate=#{productHotState}
+        WHERE id=#{id}
+    </update>
+
+    <!--分页查询product数据-->
+    <select id="queryByPage" resultMap="mapProductAndType">
+        SELECT p.*,t.typename
+        FROM product p
+        LEFT JOIN type t
+        on p.typeid=t.id
+        <where>
+            <if test="pn != null and pn!= ''">
+               and pname like concat('%',#{pn},'%')
+            </if>
+            <if test="pt != null and pt!= ''">
+               and typename like concat('%',#{pt},'%')
+            </if>
+            <if test="pmin != null and pmin != ''">
+                and tprice <![CDATA[>=]]>#{pmin}
+            </if>
+            <if test="pmax != null and pmax != ''">
+                and tprice <![CDATA[<=]]>#{pmax}
+            </if>
+        </where>
+        limit #{s},#{l}
+    </select>
+<!--得到数据量-->
+    <select id="productCount" resultType="Integer">
+        SELECT count(p.id)
+        FROM product p
+        LEFT JOIN type t
+        on p.typeid=t.id
+        <where>
+            <if test="pn != null and pn!= ''">
+                and pname like concat('%',#{pn},'%')
+            </if>
+            <if test="pt != null and pt!= ''">
+                and typename like concat('%',#{pt},'%')
+            </if>
+            <if test="pmin != null and pmin != ''">
+                and tprice <![CDATA[>=]]>#{pmin}
+            </if>
+            <if test="pmax != null and pmax != ''">
+                and tprice <![CDATA[<=]]>#{pmax}
+            </if>
+        </where>
+    </select>
+<!--根据id删除商品-->
+    <delete id="deleteById">
+        DELETE FROM product
+        WHERE id=#{id}
+    </delete>
+</mapper>
